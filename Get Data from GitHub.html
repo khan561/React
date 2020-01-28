@@ -1,0 +1,104 @@
+<!DOCTYPE Html>
+<Html>
+<style>
+	body
+	{
+
+	}
+	</style>
+<body>
+	<br>
+	
+
+
+ <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+<button type = "button" class="btn btn-primary" onclick="loadDoc()"><i>Get Data From GitHub
+    </i></button>
+	<div id = "users"></div>
+  <div id ="button"></div>
+	<script> 
+   var x=0;
+		var xhttp = new XMLHttpRequest(); 
+
+		xhttp.onreadystatechange=function()
+		{
+			if(xhttp.readyState==4 && xhttp.status == 200)
+			{
+				let users = JSON.parse( xhttp.responseText);
+				if(Array.isArray(users) && users.length )
+				{   
+					users.forEach(function(user)
+					{   
+						let childDiv = document.createElement('div');
+						let img = document.createElement('img');
+						img.setAttribute('src', user.avatar_url); 
+						img.width='250',img.height='245';
+						document.getElementById("users").appendChild(img);
+
+						let profileBtn = document.createElement('button');
+						profileBtn.className = "btn btn-link";
+						profileBtn.textContent = 'Profile';
+						profileBtn.addEventListener('click',e=>{
+							checkProfile(user);
+
+						});
+						let node = document.createElement("p");
+						let textNode = document.createTextNode("Id : "+ user.id +" -Name : "+user.login + " -Profile Link : "+user.html_url);
+						node.appendChild(textNode);
+						childDiv.appendChild(img);
+						childDiv.appendChild(profileBtn);
+						childDiv.appendChild(node);
+						document.getElementById("users").appendChild(childDiv);
+
+      				});
+				}
+			}
+			else
+			{
+				console.log(xhttp.status);
+			}
+						
+		};
+
+		function checkProfile(user)
+		{
+			localStorage.setItem('profile',JSON.stringify(user));
+			window.location = 'profile.html';
+		}
+		
+		var bttn1 = document.createElement("button");
+		bttn1.innerHTML = "PREVIOUS";
+		bttn1.className="btn btn-success";
+		document.getElementById("button").appendChild(bttn1);
+		bttn1.addEventListener("click", function(event){
+			x = x-5;
+			loadDoc();
+		}
+
+			);
+		var bttn = document.createElement("button");
+		bttn.innerHTML="NEXT";
+		bttn.className="btn btn-danger ";
+		document.getElementById("button").appendChild(bttn);
+		bttn.addEventListener("click",function(event){
+        x=x+5;
+        loadDoc();
+    
+		});
+
+        
+			function loadDoc()
+			{   //EmptyPreviousOnes();
+				xhttp.open("GET", "https://api.github.com/users?since="+x+"&per_page=5");
+				xhttp.send();
+			}
+
+         
+		</script>
+	</body>
+</Html>
